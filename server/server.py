@@ -57,7 +57,7 @@ class Server:
         # Compute the position based on given formula
         if row['price'] > row['s_avg'] + row['sigma_t']:
             return 1
-        elif row['price'] < row['s_avg'] + row['sigma_t']:
+        elif row['price'] < row['s_avg'] - row['sigma_t']:
             return -1
 
     def load_historical_alpha(self, ticker):
@@ -80,7 +80,7 @@ class Server:
         df['s_avg'] = S_avg
         df['sigma_t'] = Sigma_t
         df['signal'] = df.apply(self._compute_position, axis=1)
-        # If S(t) == (S_avg(t) + Sigma(t)) we carry forward the previous signal
+        # If S(t) within Sigma(t) of S_avg(t) we carry forward the previous signal
         df['signal'] = df['signal'].ffill()
         # Use signal computed at time t to inform position at time t+1 and use this for PnL calculation
         df['signal'] = df['signal'].shift(1)
